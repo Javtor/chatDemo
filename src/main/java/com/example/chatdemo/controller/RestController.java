@@ -5,7 +5,9 @@ import com.example.chatdemo.repository.A00352115messagesRepository;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMethod;
+
 
 import java.util.List;
 
@@ -19,8 +21,8 @@ public class RestController {
         this.repository = repository;
     }
 
-    @GetMapping(value = "/damelos", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<A00352115messages> damelos(){
-        return repository.findAll();
+    @GetMapping(value = "/damelos/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<A00352115messages> damelos(@PathVariable String id){
+        return repository.findByChatId(id);
     }
 }

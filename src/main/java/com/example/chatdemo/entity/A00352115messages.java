@@ -21,6 +21,9 @@ public class A00352115messages implements Serializable {
     @Column(name = "text", nullable = true)
     private String text;
 
+    @Column
+    private String chatId;
+
     @Column(name = "sender", nullable = true)
     private String sender;
 

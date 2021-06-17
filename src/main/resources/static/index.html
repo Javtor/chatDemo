@@ -56,21 +56,24 @@
 <ul id="messages"></ul>
 <form action="">
     <input id="username" autocomplete="off" placeholder="username" />
-    <input id="m" autocomplete="off" placeholder="equation" />
-    <button>Send</button>
+    <input id="m" autocomplete="off" placeholder="message" />
+    <button id="botoncito">Send</button>
 </form>
-<script src="http://localhost:8080/webjars/jquery/jquery.min.js"></script>
-<script src="http://localhost:8080/webjars/sockjs-client/sockjs.min.js"></script>
-<script src="http://localhost:8080/webjars/stomp-websocket/stomp.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/webjars/sockjs-client/sockjs.min.js"></script>
+<script src="/webjars/stomp-websocket/stomp.min.js"></script>
 <script>
+
+    let chatId = prompt("id del chat?");
+
     const form = document.querySelector('form');
     const messages = document.querySelector('#messages');
 
-    var socket = new SockJS("http://localhost:8080/gs-guide-websocket");
+    var socket = new SockJS("/ws");
     stompClient = Stomp.over(socket);
     stompClient.connect({}, (frame) => {
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/greetings', (greeting) => {
+        stompClient.subscribe('/chat/'+chatId+'/messages', (greeting) => {
             let msgs = JSON.parse(greeting.body);
             console.log(msgs);
             messages.innerHTML = "";
@@ -88,17 +91,21 @@
         msgs.forEach(createMessage);
     }
 
-    fetch("http://localhost:8080/damelos")
+    fetch("/damelos/"+chatId)
         .then(res => res.json())
         .then(createMessages);
 
+
     form.addEventListener("submit", (e) => {
         e.preventDefault();
-        stompClient.send("/app/hello", {}, JSON.stringify({
+        let usr = document.querySelector('#username').value;
+        stompClient.send("/app/chat", {}, JSON.stringify({
             text: document.querySelector('#m').value,
-            sender: document.querySelector('#username').value
+            sender: document.querySelector('#username').value,
+            chatId: chatId
         }));
         e.target.reset();
+        document.querySelector('#username').value = usr;
     });
 </script>
 </body>
