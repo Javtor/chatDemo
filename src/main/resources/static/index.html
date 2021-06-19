@@ -79,6 +79,11 @@
             messages.innerHTML = "";
             createMessages(msgs);
         });
+        stompClient.subscribe('/chat/'+chatId+'/messagesInd', (greeting) => {
+            let msg = JSON.parse(greeting.body);
+            console.log(msg);
+            createMessage(msg)
+        });
     });
 
     function createMessage(msg) {
@@ -99,11 +104,21 @@
     form.addEventListener("submit", (e) => {
         e.preventDefault();
         let usr = document.querySelector('#username').value;
-        stompClient.send("/app/chat", {}, JSON.stringify({
+        let msgString = JSON.stringify({
             text: document.querySelector('#m').value,
             sender: document.querySelector('#username').value,
             chatId: chatId
-        }));
+        });
+        console.log(msgString)
+        fetch('/enviar/'+chatId, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: msgString
+        }).then(res => res.json()).then(a => console.log(a));
+        //stompClient.send("/app/chat", {},msgString );
         e.target.reset();
         document.querySelector('#username').value = usr;
     });
